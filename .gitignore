@@ -1,1 +1,4 @@
+# .gitignore file
 yolov8x.pt
+.env
+training/basketball-players-detection-1/basketball-players-detection-1
