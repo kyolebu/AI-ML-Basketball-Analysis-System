@@ -34,9 +34,9 @@ class Tracker:
         detections = self.detect_frames(frames)
 
         tracks = {
-            "Players":[],  # for each frame, it has the players and their bounding box
+            "Player":[],  # for each frame, it has the players and their bounding box
             "Ref":[],
-            "Balls":[]
+            "Ball":[]
         }
 
         for frame_num, detection in enumerate(detections):
@@ -46,23 +46,23 @@ class Tracker:
             # convert to supervision Detection format
             detection_supervision = sv.Detections.from_ultralytics(detection)
             
-            tracks["Players"].append({})
+            tracks["Player"].append({})
             tracks["Ref"].append({})
-            tracks["Balls"].append({})
+            tracks["Ball"].append({})
 
             for frame_detection in detection_supervision:
                 bbox = frame_detection[0].tolist()
                 cls_id = frame_detection[3]
                 track_id = frame_detection[4]
 
-                if cls_id == cls_names_inv['Players']:
-                    tracks["Players"][frame_num][track_id] = {"bbox":bbox}
+                if cls_id == cls_names_inv['Player']:
+                    tracks["Player"][frame_num][track_id] = {"bbox":bbox}
 
                 if cls_id == cls_names_inv['Ref']:
                     tracks["Ref"][frame_num][track_id] = {"bbox":bbox}
 
-                if cls_id == cls_names_inv['Balls']:
-                    tracks["Balls"][frame_num][3] = {"box":bbox}
+                if cls_id == cls_names_inv['Ball']:
+                    tracks["Ball"][frame_num][3] = {"box":bbox}
         
         if stub_path is not None:
             with open(stub_path, "wb") as f:
@@ -82,7 +82,7 @@ class Tracker:
             center=(x_center,y2),
             axes=(int(width), int(0.35*width)),
             angle=0.0,
-            startingAngle=-45,
+            startAngle=-45,
             endAngle=235,
             color = color,
             thickness=2,
@@ -97,9 +97,9 @@ class Tracker:
         for frame_num, frame in enumerate(video_frames):
             frame = frame.copy()
 
-            player_dict = tracks["Players"][frame_num]
-            referee_dict = tracks["Ref"][frame_num]
-            balls_dict = tracks["Balls"][frame_num]
+            player_dict = tracks["Player"][frame_num]
+            ref_dict = tracks["Ref"][frame_num]
+            ball_dict = tracks["Ball"][frame_num]
 
             # draw players
             for track_id, player in player_dict.items():
